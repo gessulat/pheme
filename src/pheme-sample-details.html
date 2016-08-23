@@ -1,0 +1,30 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="pheme-sample-details">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        padding: 20px;
+      }
+      paper-card {
+          width: 800px;
+      }
+    </style>
+
+    <paper-card heading="Sample">
+        <div class="card-content">Peptide: AAAA</div>
+        <div class="card-content">Method: HCD</div>
+        <div class="card-content">Charge: 2</div>
+    </paper-card>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'pheme-sample-details'
+    });
+  </script>
+</dom-module>

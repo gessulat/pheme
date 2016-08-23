@@ -1,0 +1,94 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+
+<link rel="import" href="pheme-icons.html">
+<link rel="import" href="pheme-fragmentation-prediction.html">
+<link rel="import" href="pheme-sample-details.html">
+
+<dom-module id="pheme-app">
+  <template>
+    <style>
+      :host {
+        --app-primary-color: #00796B;
+        --app-secondary-color: #80CBC4;
+        --app-accent-color: #EEFF41;
+
+        display: block;
+      }
+
+      app-header {
+        color: white;
+        background-color: var(--app-primary-color);
+      }
+
+      paper-listbox {
+        margin: 0 20px;
+      }
+
+      paper-card {
+          width: 800px;
+      }
+
+    </style>
+
+
+    <app-drawer-layout fullbleed responsive-width="1090px">
+      <app-drawer opened>
+        <app-toolbar>Samples</app-toolbar>
+        <paper-listbox selected=0>
+            <template is="dom-repeat" id="samples-list" items="{{samples}}">
+                <paper-item>{{item.peptide}}</paper-item>
+            </template>
+        </paper-listbox>
+      </app-drawer>
+
+      <app-header-layout has-scrolling-region>
+        <app-header condenses reveals effects="waterfall">
+          <app-toolbar>
+            <paper-icon-button drawer-toggle icon="menu"></paper-icon-button>
+            <div main-title>Pheme</div>
+          </app-toolbar>
+        </app-header>
+
+        <pheme-sample-details name="sample-details"></pheme-sample-details>
+        <pheme-fragmentation-prediction name="prediction"></pheme-fragmentation-prediction>
+
+      </app-header-layout>
+    </app-drawer-layout>
+  </template>
+
+
+  <script>
+    Polymer({
+      is: 'pheme-app',
+
+      properties: { 
+        'responsiveWidth': '800px'
+      },
+
+      ready: function() {
+        this.samples = [
+            {peptide: 'AAADFAS', other: 'Smith'},
+            {peptide: 'DASDFAA', other: 'Smith'},
+            {peptide: 'AQQQASD', other: 'Smith'},
+            {peptide: 'FFFASAS', other: 'Smith'},
+            {peptide: 'QWEADF', other: 'Smith'},
+        ];
+      },
+
+      observers: [],
+
+    });
+  </script>
+</dom-module>

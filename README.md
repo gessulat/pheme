@@ -14,7 +14,10 @@ You need to install:
 - Node + npm
 - polymer-cli with `npm install -g polymer-cli`
 
-Then run `polymer serve -o` in the project's root directory.
+Running the app.
+
+- The first time startin the app, run `bower install` in the main directory.
+- Start the app with `polymer serve -o`.
 
 ---
 

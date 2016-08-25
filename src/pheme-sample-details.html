@@ -5,26 +5,44 @@
 <dom-module id="pheme-sample-details">
   <template>
     <style include="shared-styles">
-      :host {
-        display: block;
-        padding: 20px;
-      }
-      paper-card {
-          width: 800px;
-      }
+    :host {
+      display: block;
+      padding-top: 20px;
+      padding-left: 20px;
+    }
+
+    paper-card {
+        width: 800px;
+    }
+    .card-content {
+        line-height: 0.5;
+    }
     </style>
 
-    <paper-card heading="Sample">
-        <div class="card-content">Peptide: AAAA</div>
-        <div class="card-content">Method: HCD</div>
-        <div class="card-content">Charge: 2</div>
+    <paper-card heading="Sample Details">
+        <div class="card-content">
+            <p>Peptide: {{sampleDetails.peptide}}</p>
+            <p>Method: {{sampleDetails.method}}</p>
+            <p>Charge: {{sampleDetails.charge}}</p>
+        </div>
     </paper-card>
 
   </template>
 
   <script>
     Polymer({
-      is: 'pheme-sample-details'
+
+      is: 'pheme-sample-details',
+
+      properties: {
+
+        sampleDetails: {
+            type: Object,
+            value: false,
+        }
+
+      },
+
     });
   </script>
 </dom-module>

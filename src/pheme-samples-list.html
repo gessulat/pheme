@@ -1,0 +1,73 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+
+<dom-module id="pheme-samples-list">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+
+            paper-listbox {
+              margin: 0 20px;
+            }
+
+            paper-item {
+              padding: 5px;
+              min-height: 20px;
+            }
+        </style>
+
+
+        <paper-listbox selected={{_selectedSampleIndex}}>
+            <template is="dom-repeat" items="{{samples}}">
+                <paper-item>{{item.meta.peptide}}</paper-item>
+            </template>
+        </paper-listbox>
+
+
+    </template>
+    <script>
+
+    Polymer({
+
+    is: 'pheme-samples-list',
+
+    properties: { 
+        _selectedSampleIndex: { 
+            type: Number,
+            observer: '_setSelectedSample'
+        },
+
+        selectedSample: {
+            type: Object,
+            notify: true,
+        },
+
+        samples: {
+            type: Array,
+            value: [
+            {   meta: { peptide: 'ABC', method: 'HCD' },
+                data: { target: [], prediction: [] }
+            },
+            {   meta: { peptide: 'DEF', method: 'HCD' },
+                data: { target: [], prediction: [] }
+            },
+            {   meta: { peptide: 'GHI', method: 'HCD' },
+                data: { target: [], prediction: [] }
+            }
+            ]
+        },
+
+    },
+
+    _setSelectedSample: function () {
+        this.selectedSample = this.samples[this._selectedSampleIndex];
+    },
+
+    });
+    </script>
+</dom-module>
+

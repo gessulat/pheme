@@ -1,0 +1,171 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="pheme-viz-spectrum">
+    <template>
+        <style include="shared-styles">
+          :host {
+            display: block;
+            padding-top: 20px;
+            padding-left: 20px;
+          }
+
+          paper-card {
+              width: 800px;
+          }
+
+          svg {
+            height: 410px;
+            width: 800px;
+          }
+
+          svg rect.bg-target {
+            fill: var(--app-secondary-color);/* lime 50 */
+          }
+        </style>
+
+        <paper-card heading="Fragmentation Prediction">
+            <svg id="svg"></svg>
+        </paper-card>
+
+    </template>
+
+    <script>
+    Polymer({
+
+    is: 'pheme-viz-spectrum',
+
+    properties: {
+        chartConfig: {
+            type: Object
+        },
+        sampleData: {
+            type: Object,
+            value: false,
+            observer: '_observeSampleData'
+        }
+    },
+
+    _observeSampleData: function (e) {
+        if(this.sampleData && this.sampleData.target.length > 0){
+            this._updateChart(this.sampleData);
+        } else {
+            this._clearChart();
+        }
+    },
+
+    ready: function () {
+        this._initChartConfig();
+        this._initChart();
+    },
+
+    _initChartConfig: function () {
+        var svg = d3.select(this.$.svg)
+        var config = { 
+            padding: { left: 25 },
+            scales: {},
+            axis: {},
+            max: {
+                height: 200,
+                width: 750
+            },
+            scaleExtent: [1, 20]
+        };
+
+        config.scales.mass = d3.scale.linear().range([0, config.max.width]);
+        config.scales.intensity = d3.scale.linear().range([0, config.max.height]);
+
+        config.axis.x = d3.svg.axis().scale(config.scales.mass);
+
+        config.zoom = d3.behavior.zoom()
+            .x(config.scales.mass)
+            .scaleExtent(config.scaleExtent)
+            .on("zoom", function () {
+                var translate = d3.event.translate;
+                var size = config.max.width * d3.event.scale;
+
+                translate[0] = Math.min(translate[0], 0);
+                translate[0] = Math.max(translate[0], config.max.width - size);
+                config.zoom.translate(translate);
+                svg.select('g.x.axis').call(config.axis.x);
+                svg.selectAll('.peak')
+                    .attr('x', function(d, i){ return config.scales.mass(d.mz) })
+        });
+
+        this.chartConfig = config;
+    },
+
+    _initChart: function () {
+        var svg = d3.select(this.$.svg)
+        var c = this.chartConfig;
+
+        svg.append("rect").attr("class", "bg-target")
+            .attr({
+                height: c.max.height+10,
+                width:c.max.width + 2*c.padding.left,
+                x: 0,
+                y: c.max.height,
+            });
+
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(" + c.padding.left + "," + c.max.height + ")")
+            .call(this.chartConfig.axis.x)
+            .style({
+                'font-size': '15px',
+                'fill': '#607D8B'
+            })
+            .selectAll('.axis line, .axis path')
+            .style({
+                'stroke': '#90A4AE', 
+                'fill': 'none', 
+                'shape-rendering': 'crispEdges'
+            });
+
+    },
+
+    _clearChart: function () {
+        var svg = d3.select(this.$.svg)
+        svg.selectAll("g.prediction").remove();
+        svg.selectAll("g.target").remove();
+    },
+
+    _updateChart: function (data) {
+        var c = this.chartConfig;
+        var svg = d3.select(this.$.svg)
+
+        var predictionData = svg.selectAll("g.prediction")
+          .data(data.prediction);
+        predictionData.enter()
+            .append("g").attr('class', 'prediction')
+            .append("rect").attr('class', 'peak')
+                .attr({
+                    height: function(d, i) { 
+                        return c.scales.intensity(d.intensity) },
+                    width:1,
+                    x: function(d, i) {
+                        return c.padding.left + c.scales.mass(d.mz) },
+                    y: c.max.height
+                });
+        predictionData.exit().remove();
+
+
+        var targetData = svg.selectAll("g.target")
+            .data(data.target);
+        targetData.enter()
+        .append("g").attr('class', 'target')
+        .append("rect").attr('class', 'peak')
+            .attr({
+                height: function (d, i) { 
+                    return c.scales.intensity(d.intensity) },
+                width:1,
+                x: function (d, i) { 
+                    return c.padding.left + c.scales.mass(d.mz) },
+                y: function (d, i) { 
+                    return c.max.height - c.scales.intensity(d.intensity) }
+          });
+    }
+
+    });
+    </script>
+</dom-module>

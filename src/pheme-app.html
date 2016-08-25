@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+
 <link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
 <link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
 <link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
@@ -6,23 +7,20 @@
 <link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
 <link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
-<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
-
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../bower_components/paper-item/paper-item.html">
-<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
 
 <link rel="import" href="pheme-icons.html">
-<link rel="import" href="pheme-fragmentation-prediction.html">
+<link rel="import" href="pheme-samples-list.html">
+<link rel="import" href="pheme-viz-spectrum.html">
 <link rel="import" href="pheme-sample-details.html">
 
 <dom-module id="pheme-app">
   <template>
     <style>
       :host {
-        --app-primary-color: #00796B;
-        --app-secondary-color: #80CBC4;
-        --app-accent-color: #EEFF41;
+        --app-primary-color: #00796B; /* teal 500 */
+        --app-secondary-color: #F0F4C3; /* lime 50 */
+        --app-accent-color: #EEFF41; /* lime A200 */
 
         display: block;
       }
@@ -32,28 +30,22 @@
         background-color: var(--app-primary-color);
       }
 
-      paper-listbox {
-        margin: 0 20px;
-      }
-
-      paper-card {
-          width: 800px;
-      }
-
     </style>
 
+    <app-drawer-layout responsive-width="1100px">
+      <app-drawer id="drawer">
 
-    <app-drawer-layout fullbleed responsive-width="1090px">
-      <app-drawer opened>
         <app-toolbar>Samples</app-toolbar>
-        <paper-listbox selected=0>
-            <template is="dom-repeat" id="samples-list" items="{{samples}}">
-                <paper-item>{{item.peptide}}</paper-item>
-            </template>
-        </paper-listbox>
+
+        <pheme-samples-list 
+                selected-sample="{{selectedSample}}"
+                samples="{{samples}}">
+        </pheme-samples-list>
+
       </app-drawer>
 
-      <app-header-layout has-scrolling-region>
+
+      <app-header-layout >
         <app-header condenses reveals effects="waterfall">
           <app-toolbar>
             <paper-icon-button drawer-toggle icon="menu"></paper-icon-button>
@@ -61,33 +53,65 @@
           </app-toolbar>
         </app-header>
 
-        <pheme-sample-details name="sample-details"></pheme-sample-details>
-        <pheme-fragmentation-prediction name="prediction"></pheme-fragmentation-prediction>
+        <pheme-viz-spectrum
+                name="prediction"
+                sample-data=[[selectedSample.data]]>
+        </pheme-viz-spectrum>
+
+        <pheme-sample-details 
+                name="sample-details"
+                sample-details=[[selectedSample.meta]]>
+        </pheme-sample-details>
 
       </app-header-layout>
     </app-drawer-layout>
   </template>
 
 
+  <script src="../data/data.js"></script>
   <script>
     Polymer({
       is: 'pheme-app',
 
       properties: { 
-        'responsiveWidth': '800px'
+
+        selectedSample: {
+            type: Object,
+            notify: true,
+            observer: '_onSelectionChange'
+        },
+
+        phemeType: 'mass-spectrum',
+        samples: {
+            type: Array,
+            value: [
+                {   meta: { peptide: 'AAADFAS', method: 'HCD', charge: 3 },
+                    data: { target: [], prediction: [] }
+                },
+                {   meta: { peptide: 'DFDFQ', method: 'CID', charge: 2 },
+                    data: { target: [], prediction: [] }
+                },
+                {   meta: { peptide: 'NOPRED', method: 'HCD', charge: 1 },
+                    data: { target: [], prediction: [] }
+                }
+            ],
+        },
+
       },
 
-      ready: function() {
-        this.samples = [
-            {peptide: 'AAADFAS', other: 'Smith'},
-            {peptide: 'DASDFAA', other: 'Smith'},
-            {peptide: 'AQQQASD', other: 'Smith'},
-            {peptide: 'FFFASAS', other: 'Smith'},
-            {peptide: 'QWEADF', other: 'Smith'},
-        ];
-      },
+    _onSelectionChange: function (){
+        if (!this.$.drawer.persistent) {
+            this.$.drawer.close();
+        }
+    },
 
-      observers: [],
+    ready: function () {
+        // fill data to samples
+        var i;
+        for (i=0; i < data.length; i++) {
+            this.samples[i].data = data[i];
+        }
+    }
 
     });
   </script>

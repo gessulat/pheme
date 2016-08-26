@@ -60,10 +60,9 @@
     },
 
     _observeSampleData: function (e) {
+        this._clearChart();
         if(this.sampleData && this.sampleData.target.length > 0){
             this._updateChart(this.sampleData);
-        } else {
-            this._clearChart();
         }
     },
 

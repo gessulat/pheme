@@ -4,24 +4,37 @@
 <dom-module id="pheme-viz-spectrum">
     <template>
         <style include="shared-styles">
-          :host {
+        :host {
             display: block;
             padding-top: 20px;
             padding-left: 20px;
-          }
+        }
 
-          paper-card {
-              width: 800px;
-          }
+        paper-card {
+            width: 800px;
+        }
 
-          svg {
+        svg {
             height: 410px;
             width: 800px;
-          }
-
-          svg rect.bg-target {
+        }
+        svg rect.bg-target {
             fill: var(--app-secondary-color);/* lime 50 */
-          }
+        }
+        svg rect.zoom-layer {
+            fill: none;
+            pointer-events: all;
+            cursor: -webkit-grab
+        }
+        g.x.axis {
+            font-size: 15px;
+            fill: #607D8B;
+        }
+        .axis path, line{
+            stroke: #90A4AE;
+            fill: none;
+            shape-rendering: crispEdges;
+        }
         </style>
 
         <paper-card heading="Fragmentation Prediction">
@@ -110,17 +123,21 @@
         svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(" + c.padding.left + "," + c.max.height + ")")
-            .call(this.chartConfig.axis.x)
-            .style({
-                'font-size': '15px',
-                'fill': '#607D8B'
-            })
-            .selectAll('.axis line, .axis path')
-            .style({
-                'stroke': '#90A4AE', 
-                'fill': 'none', 
-                'shape-rendering': 'crispEdges'
+            .call(this.chartConfig.axis.x);
+
+        svg.append('rect')
+            .attr({
+                class: "zoom-layer",
+                width: c.max.width,
+                height: 2 * c.max.height
+            }).call(c.zoom);
+
+        // to move the zoom layer always to the front
+        d3.selection.prototype.moveToFront = function() {
+            return this.each(function(){
+                this.parentNode.appendChild(this);
             });
+        };
 
     },
 
@@ -163,7 +180,9 @@
                     return c.padding.left + c.scales.mass(d.mz) },
                 y: function (d, i) { 
                     return c.max.height - c.scales.intensity(d.intensity) }
-          });
+            });
+
+        svg.select("rect.zoom-layer").moveToFront();
     }
 
     });

@@ -1,10 +1,9 @@
-#Pheme
 With Pheme you can compare predictions against some ground truth visually. Visualizations are specific to the data type of the prediction. Currently available data types are:
 
 - mass spectra
 
 
-![screenshot](images/pheme.jpg =650x)
+![screenshot](https://gitlab.lrz.de/proteomics/pheme/raw/master/images/pheme.jpg)
 
 ---
 # Installation

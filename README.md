@@ -3,7 +3,7 @@ With Pheme you can compare predictions against some ground truth visually. Visua
 - mass spectra
 
 
-![screenshot](https://gitlab.lrz.de/proteomics/pheme/raw/master/images/pheme.jpg)
+![screenshot](https://raw.githubusercontent.com/gessulat/pheme/master/images/pheme.jpg)
 
 ---
 # Installation
